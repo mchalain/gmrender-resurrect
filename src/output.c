@@ -34,7 +34,7 @@
 #include <signal.h>
 #include <dlfcn.h>
 
-#include <glib.h>
+#include <upnp.h>
 
 #include "logging.h"
 #include "output_module.h"
@@ -129,25 +129,12 @@ int output_init(const char *shortname)
 	return 0;
 }
 
-static GMainLoop *main_loop_ = NULL;
-static void exit_loop_sighandler(int sig) {
-	if (main_loop_) {
-		// TODO(hzeller): revisit - this is not safe to do.
-		g_main_loop_quit(main_loop_);
-	}
-}
-
 int output_loop()
 {
-        /* Create a main loop that runs the default GLib main context */
-        main_loop_ = g_main_loop_new(NULL, FALSE);
-
-	signal(SIGINT, &exit_loop_sighandler);
-	signal(SIGTERM, &exit_loop_sighandler);
-
-        g_main_loop_run(main_loop_);
-
-        return 0;
+	if (output_module && output_module->loop) {
+		return output_module->loop();
+	}
+	return 0;
 }
 
 int output_add_options(int *argc, char **argv[])
@@ -205,14 +192,14 @@ int output_stop(void) {
 	return -1;
 }
 
-int output_seek(gint64 position_nanos) {
+int output_seek(int64_t position_nanos) {
 	if (output_module && output_module->seek) {
 		return output_module->seek(position_nanos);
 	}
 	return -1;
 }
 
-int output_get_position(gint64 *track_dur, gint64 *track_pos) {
+int output_get_position(int64_t *track_dur, int64_t *track_pos) {
 	if (output_module && output_module->get_position) {
 		return output_module->get_position(track_dur, track_pos);
 	}

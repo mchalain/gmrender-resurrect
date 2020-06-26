@@ -612,6 +612,27 @@ static int output_gstreamer_init(void)
 	return 0;
 }
 
+static GMainLoop *main_loop_ = NULL;
+static void exit_loop_sighandler(int sig) {
+	if (main_loop_) {
+		// TODO(hzeller): revisit - this is not safe to do.
+		g_main_loop_quit(main_loop_);
+	}
+}
+
+static int output_gstreamer_loop(void)
+{
+        /* Create a main loop that runs the default GLib main context */
+        main_loop_ = g_main_loop_new(NULL, FALSE);
+
+	signal(SIGINT, &exit_loop_sighandler);
+	signal(SIGTERM, &exit_loop_sighandler);
+
+        g_main_loop_run(main_loop_);
+
+        return 0;
+}
+
 static const char *output_gstreamer_version(char *buffer, size_t len)
 {
 	snprintf(buffer, len, "%d.%d.%d (glib-%d.%d.%d; gstreamer-%d.%d.%d)",
@@ -627,6 +648,7 @@ static struct output_module gstreamer_output = {
 	.add_options = output_gstreamer_add_options,
 
 	.init        = output_gstreamer_init,
+	.loop        = output_gstreamer_loop,
 	.version     = output_gstreamer_version,
 	.set_uri     = output_gstreamer_set_uri,
 	.set_next_uri= output_gstreamer_set_next_uri,
