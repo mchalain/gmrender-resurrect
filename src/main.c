@@ -30,13 +30,14 @@
 #endif
 
 #include <assert.h>
-#include <glib.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+
+#include <glib.h>
 
 #ifndef HAVE_LIBUPNP
 # error "To have gmrender any useful, you need to have libupnp installed."
