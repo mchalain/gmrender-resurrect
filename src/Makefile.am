@@ -11,6 +11,7 @@ gmediarender_SOURCES = main.c git-version.h \
 	webserver.c webserver.h \
 	output.c output.h \
 	logging.h logging.c \
+	gmrender_list.c gmrender_list.h \
 	xmldoc.c xmldoc.h \
 	xmlescape.c xmlescape.h
 
@@ -32,9 +33,8 @@ MOD_MAJOR_VERSION=$(word 1,$(subst ., ,$(GMRENDER_GST_VERSION)))
 MOD_MINOR_VERSION=$(word 2,$(subst ., ,$(GMRENDER_GST_VERSION)))
 MOD_MICRO_VERSION=$(word 3,$(subst ., ,$(GMRENDER_GST_VERSION)))
 
-AM_CPPFLAGS = $(GLIB_CFLAGS) $(GST_CFLAGS) $(LIBUPNP_CFLAGS) -DPKG_DATADIR=\"$(datadir)/gmediarender\"
-gmediarender_CFLAGS = $(GLIB_CFLAGS) $(LIBUPNP_CFLAGS) -DPKG_DATADIR=\"$(datadir)/gmediarender\"  -DLIBDIR=\"$(libdir)\"
-gmediarender_LDADD = $(GLIB_LIBS) $(LIBUPNP_LIBS) -ldl
+gmediarender_CFLAGS = $(LIBUPNP_CFLAGS) -DPKG_DATADIR=\"$(datadir)/gmediarender\"  -DLIBDIR=\"$(libdir)\"
+gmediarender_LDADD = $(LIBUPNP_LIBS) -ldl
 gmediarender_LDFLAGS = -rdynamic -Wl,-rpath -Wl,$(libdir)
 gmrender_gst_la_CFLAGS = $(GLIB_CFLAGS) $(GST_CFLAGS)
 gmrender_gst_la_CFLAGS += -DMOD_MAJOR_VERSION=$(MOD_MAJOR_VERSION)
